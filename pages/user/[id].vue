@@ -45,6 +45,7 @@ fetchUserDetail();
             <p><strong>Şirket:</strong> {{ user?.company?.name }}</p>
             <p>
               <strong>Adres:</strong> {{ user?.address?.street }},
+              {{ user?.address?.suite }},
               {{ user?.address?.city }}
             </p>
           </v-card-text>
@@ -53,6 +54,9 @@ fetchUserDetail();
           </v-card-actions>
         </v-card>
       </v-col>
+    </v-row>
+    <v-row v-if="user">
+      <v-col><Map :userDetail="user" /></v-col>
     </v-row>
   </v-container>
 </template>
