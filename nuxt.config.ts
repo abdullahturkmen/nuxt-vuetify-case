@@ -7,4 +7,9 @@ export default defineNuxtConfig({
   build: {
     transpile: ["vuetify"],
   },
+  runtimeConfig: {
+    public: {
+      API_URL: process.env.API_URL || "https://jsonplaceholder.typicode.com",
+    },
+  },
 });

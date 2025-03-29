@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  const API_URL = config.public.API_URL;
   const id = event.context.params?.id;
-
-  console.log("Gelen ID:", id);
 
   if (!id || isNaN(Number(id))) {
     console.error("Geçersiz ID:", id);
@@ -12,9 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const data = await $fetch(
-      `https://jsonplaceholder.typicode.com/users/${id}`
-    );
+    const data = await $fetch(`${API_URL}/users/${id}`);
 
     if (!data) {
       console.error("Kullanıcı bulunamadı:", id);
