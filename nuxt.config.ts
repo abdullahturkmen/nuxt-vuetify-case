@@ -12,4 +12,10 @@ export default defineNuxtConfig({
       API_URL: process.env.API_URL || "https://jsonplaceholder.typicode.com",
     },
   },
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false,
+    },
+  ],
 });

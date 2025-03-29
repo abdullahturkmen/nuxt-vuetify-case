@@ -24,8 +24,11 @@ fetchUserDetail();
         <v-skeleton-loader v-if="loading" type="card" />
         <v-card v-else class="user-detail-card" elevation="6">
           <v-card-title>
-            <v-avatar color="primary" size="64" class="mr-3">
-              {{ user?.name[0] }}
+            <v-avatar color="primary" size="128" class="mr-3">
+              <img
+                :src="`https://robohash.org/${user?.id}.png`"
+                alt="User Avatar"
+              />
             </v-avatar>
             <span class="text-h5">{{ user?.name }}</span>
           </v-card-title>
