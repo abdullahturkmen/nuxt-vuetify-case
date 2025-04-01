@@ -30,8 +30,10 @@ const fetchUsers = async () => {
 fetchUsers();
 
 watchEffect(() => {
-  if (filterByName.value) {
-    fetchUsers();
+  if (filterByName.value !== null) {
+    setTimeout(() => {
+      fetchUsers();
+    }, 500);
   }
 });
 </script>
