@@ -1,5 +1,6 @@
 <script setup>
 const route = useRoute();
+const router = useRouter();
 const loading = ref(true);
 const user = ref(null);
 
@@ -10,11 +11,30 @@ const fetchUserDetail = async () => {
   } catch (error) {
     console.error("Veri alınırken hata oluştu", error);
   } finally {
-    loading.value = false;
+    if (user.value == null) {
+      router.push("/");
+    }
+    setTimeout(() => {
+      loading.value = false;
+    }, 500);
   }
 };
 
 fetchUserDetail();
+
+watchEffect(() => {
+  if (user.value) {
+    useHead({
+      title: `${user?.value?.name}`,
+      meta: [
+        {
+          name: "description",
+          content: `View the profile of ${user?.value?.name} - ${user?.value?.email}`,
+        },
+      ],
+    });
+  }
+});
 </script>
 
 <template>
@@ -26,8 +46,11 @@ fetchUserDetail();
           <v-card-title>
             <v-avatar color="primary" size="128" class="mr-3">
               <img
-                :src="`https://robohash.org/${user?.id}.png`"
-                alt="User Avatar"
+                :src="
+                  user?.img ? user?.img : `https://robohash.org/${user?.id}.png`
+                "
+                :alt="user?.name"
+                width="100%"
               />
             </v-avatar>
             <span class="text-h5">{{ user?.name }}</span>
@@ -49,14 +72,18 @@ fetchUserDetail();
               {{ user?.address?.city }}
             </p>
           </v-card-text>
-          <v-card-actions>
-            <v-btn to="/" color="secondary" block> Geri Dön </v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-    <v-row v-if="user">
-      <v-col><Map :userDetail="user" /></v-col>
+    <v-row v-if="user && !loading">
+      <v-col cols="12" md="8" class="mx-auto"><Map :userDetail="user" /></v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" md="8" class="mx-auto">
+        <v-card-actions>
+          <v-btn to="/" color="secondary" block> Geri Dön </v-btn>
+        </v-card-actions>
+      </v-col>
     </v-row>
   </v-container>
 </template>

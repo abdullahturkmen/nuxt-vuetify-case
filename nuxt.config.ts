@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: false },
   css: ["vuetify/styles"],
-  plugins: ["@/plugins/vuetify.ts"],
+  plugins: ["@/plugins/vuetify.ts", "@/plugins/error-handler.ts"],
   build: {
     transpile: ["vuetify"],
   },

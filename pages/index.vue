@@ -1,14 +1,24 @@
 <script setup>
 import { ref } from "vue";
 
+useHead({
+  title: "Nuxt Vuetify Case",
+});
+
 const users = ref([]);
 const loading = ref(true);
 const isGridView = ref(true);
 
-// Kullanıcıları Fetch etme
+const filterByName = ref(null);
+
 const fetchUsers = async () => {
   try {
-    const { data } = await useFetch("/api/users");
+    let url = "/api/users";
+    if (filterByName.value) {
+      url += `?name=${encodeURIComponent(filterByName.value)}`;
+    }
+    const { data } = await useFetch(url);
+
     users.value = data.value;
   } catch (error) {
     console.error("Veri alınırken hata oluştu", error);
@@ -18,12 +28,26 @@ const fetchUsers = async () => {
 };
 
 fetchUsers();
+
+watchEffect(() => {
+  if (filterByName.value) {
+    fetchUsers();
+  }
+});
 </script>
 
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" class="text-center mb-4">
+      <v-col>
+        <v-text-field
+          label="Kullanıcı Ara"
+          variant="outlined"
+          v-model="filterByName"
+          density="compact"
+        ></v-text-field>
+      </v-col>
+      <v-col cols="6" class="text-end mb-4">
         <v-btn
           @click="isGridView = true"
           :color="isGridView ? 'primary' : 'grey'"

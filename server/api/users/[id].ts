@@ -5,29 +5,40 @@ export default defineEventHandler(async (event) => {
 
   if (!id || isNaN(Number(id))) {
     console.error("Geçersiz ID:", id);
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Geçersiz ID! Sadece sayısal değer giriniz.",
-    });
   }
 
   try {
-    const data = await $fetch(`${API_URL}/users/${id}`);
+    let data = await $fetch(`${API_URL}/users/${id}`);
 
-    if (!data) {
-      console.error("Kullanıcı bulunamadı:", id);
-      throw createError({
-        statusCode: 404,
-        statusMessage: `Kullanıcı bulunamadı! ID: ${id}`,
+    if (data.id === 1) {
+      Object.assign(data, {
+        id: 1,
+        name: "Abdullah Türkmen",
+        username: "abdullahturkmen",
+        email: "abdullahtrkmn13@gmail.com",
+        phone: "+90 537 299 70 45",
+        website: "abdullahturkmen.com",
+        company: {
+          name: "Fair Teknoloji",
+          catchPhrase: "Innovate, Create, Dominate",
+          bs: "Full-stack development and design",
+        },
+        img: "https://abdullahturkmen.com/abdullah-turkmen-avatar.jpg",
+        address: {
+          street: "Esentepe Mh. 2385 Sk.",
+          suite: "No. 556",
+          city: "Sultangazi / İstanbul",
+          zipcode: "34265",
+          geo: {
+            lat: "41.097745",
+            lng: "28.878391",
+          },
+        },
       });
     }
 
     return data;
   } catch (error) {
     console.error("API isteğinde hata:", error);
-    throw createError({
-      statusCode: 500,
-      statusMessage: "Sunucu hatası! Lütfen tekrar deneyin.",
-    });
   }
 });

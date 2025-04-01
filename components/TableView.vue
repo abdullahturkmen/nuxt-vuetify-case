@@ -4,10 +4,10 @@
       <v-data-table
         :headers="[
           { title: '', align: 'start', key: 'img' },
-          { title: 'User', align: 'start', key: 'name' },
+          { title: 'Kullanıcı', align: 'start', key: 'name' },
           { title: 'Email', align: 'start', key: 'email' },
-          { title: 'Phone', align: 'start', key: 'phone' },
-          { title: 'Company', align: 'start', key: 'company.name' },
+          { title: 'Telefon', align: 'start', key: 'phone' },
+          { title: 'Şirket', align: 'start', key: 'company.name' },
         ]"
         :items="users"
         item-value="id"
@@ -16,9 +16,10 @@
       >
         <template v-slot:item.img="{ index, item }">
           <img
-            :src="`https://robohash.org/${item?.id}.png`"
-            alt="User Avatar"
+            :src="item.img ? item.img : `https://robohash.org/${item.id}.png`"
+            :alt="item.name"
             width="48"
+            class="mt-1"
           />
         </template>
       </v-data-table>

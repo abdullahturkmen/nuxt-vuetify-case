@@ -4,7 +4,6 @@ useHead({
     {
       src: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
       type: "text/javascript",
-      defer: true,
     },
   ],
   link: [
@@ -22,31 +21,92 @@ const props = defineProps({
   },
 });
 
+const map = ref(null);
+const mapInitialized = ref(false);
+
 onMounted(() => {
-  if (typeof window !== "undefined") {
-    const L = window.L;
+  const checkLeaflet = () => {
+    if (typeof window !== "undefined" && window.L) {
+      initMap();
+    } else {
+      setTimeout(checkLeaflet, 100);
+    }
+  };
 
-    const details = props.userDetail || null;
-    const { lat, lng } = props.userDetail?.address?.geo || { lat: 0, lng: 0 };
-    const modifiedLat = parseFloat(2 - lat);
-    const modifiedLng = parseFloat(lng - 28);
+  checkLeaflet();
+});
 
-    const map = L.map("map").setView([modifiedLat, modifiedLng], 7);
+function initMap() {
+  if (mapInitialized.value) return;
+
+  const L = window.L;
+  const details = props.userDetail || null;
+
+  if (!details || !details.address || !details.address.geo) {
+    console.error("Kullanıcı konum bilgisi bulunamadı");
+    return;
+  }
+
+  const { lat, lng } = details.address.geo;
+
+  const mapElement = document.getElementById("map");
+  if (!mapElement) {
+    console.error("Map element bulunamadı");
+    return;
+  }
+
+  try {
+    map.value = L.map("map").setView([parseFloat(lat), parseFloat(lng)], 8);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-    }).addTo(map);
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map.value);
 
     const location = {
-      coords: [modifiedLat, modifiedLng],
-      label: details?.name,
-      address: `${details?.address?.street}, ${details?.address?.suite}, ${details?.address?.city}`,
-      phone: details?.phone,
+      coords: [parseFloat(lat), parseFloat(lng)],
+      label: details.name,
+      address: `${details.address.street}, ${details.address.suite}, ${details.address.city}`,
+      phone: details.phone,
     };
+
     const popupContent = `<strong>${location.label}</strong><br>${location.address}<br><strong>${location.phone}</strong>`;
-    L.marker(location.coords).addTo(map).bindPopup(popupContent); // İşaretçiye detay ekle
+    L.marker(location.coords)
+      .addTo(map.value)
+      .bindPopup(popupContent)
+      .openPopup();
+
+    mapInitialized.value = true;
+  } catch (error) {
+    console.error("Harita başlatılırken hata oluştu:", error);
+  }
+}
+
+onBeforeUnmount(() => {
+  if (map.value) {
+    map.value.remove();
+    map.value = null;
   }
 });
+
+watch(
+  () => props.userDetail,
+  (newValue) => {
+    if (map.value) {
+      map.value.remove();
+      map.value = null;
+      mapInitialized.value = false;
+    }
+
+    if (newValue) {
+      setTimeout(() => {
+        initMap();
+      }, 100);
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <template>
